@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Street Mail">
+<meta name="theme-color" content="#ffe500">
 <title>STREET MAIL ✉️</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,700;1,800&family=Permanent+Marker&display=swap">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -16,12 +20,22 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Kanit","Sarabun",system-ui,sans-serif;line-height:1.5;
 background-image:radial-gradient(var(--wall) 1.5px,transparent 1.5px);background-size:18px 18px}
-main{max-width:680px;margin:0 auto;padding:18px 16px 70px}
+main{max-width:680px;margin:0 auto;padding:18px 16px 70px;overflow-x:clip}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 h1{font-family:"Permanent Marker","Kanit",cursive;font-size:38px;margin:6px 0 0;transform:rotate(-2deg);color:var(--ink);text-shadow:3px 3px 0 var(--y)}
-.sub{margin:6px 0 18px;color:var(--mute);font-size:14px}
+.sub{margin:6px 0 14px;color:var(--mute);font-size:14px}
+#inst{font-size:12px;padding:6px 12px;background:var(--g);color:#16161a;margin-top:10px;white-space:nowrap;box-shadow:3px 3px 0 var(--ink);transform:rotate(2deg)}
+#inst[hidden]{display:none}
+.tapeLine{margin:0 -16px 8px;background:var(--y);color:#16161a;border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:rotate(-1deg);overflow:hidden;white-space:nowrap;font-weight:700;font-size:13px;padding:3px 0}
+.tapeLine span{display:inline-block;padding-left:100%;animation:mq 20s linear infinite}
+@keyframes mq{to{transform:translateX(-100%)}}
+@media (prefers-reduced-motion:reduce){.tapeLine span{animation:none;padding-left:12px}}
 h2{display:inline-block;font-size:15px;font-weight:700;background:var(--ink);color:var(--bg);padding:3px 12px;margin:26px 0 12px;transform:rotate(-1deg);letter-spacing:.5px}
 .box{background:var(--card);border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:14px;position:relative}
 .box::before{content:"";position:absolute;top:-12px;left:20px;width:70px;height:22px;background:rgba(255,229,0,.8);transform:rotate(-4deg)}
+.stk{position:absolute;font-size:30px;filter:drop-shadow(2px 2px 0 var(--ink));pointer-events:none;line-height:1}
+.stk.a{top:-18px;right:-6px;transform:rotate(14deg)}
+.stk.b{bottom:-16px;right:14px;transform:rotate(-10deg)}
 input,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--ink);border-radius:0;padding:9px 11px;margin-bottom:8px}
 textarea{min-height:120px;resize:vertical}
 .lab{font-size:13px;font-weight:700;margin:4px 0 6px}
@@ -31,7 +45,8 @@ textarea{min-height:120px;resize:vertical}
 button{font:inherit;font-weight:700;cursor:pointer;border:3px solid var(--ink);background:var(--p);color:#fff;padding:9px 20px;box-shadow:4px 4px 0 var(--ink);text-transform:uppercase}
 button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
 button:disabled{opacity:.45}
-.chip{text-transform:none;font-weight:400}
+.chip,#inst{text-transform:none}
+.chip{font-weight:400}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px 16px}
 .env{position:relative;height:108px;background:var(--kraft);border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);padding:0;width:100%;text-transform:none;color:var(--ink)}
 .env:nth-child(odd){transform:rotate(-2.5deg)}.env:nth-child(even){transform:rotate(2deg)}
@@ -46,6 +61,7 @@ button:disabled{opacity:.45}
 .mine span:last-child{white-space:nowrap;font-weight:700}
 .empty{color:var(--mute);text-align:center;padding:14px;font-size:14px}
 .note{font-size:12px;color:var(--mute);margin-top:8px}
+.foot{text-align:center;margin-top:34px;font-family:"Permanent Marker","Kanit",cursive;color:var(--mute);font-size:15px;transform:rotate(-1deg)}
 #modal{position:fixed;inset:0;background:rgba(10,10,14,.78);display:none;align-items:center;justify-content:center;z-index:20;padding:20px;overflow:auto}
 #modal.on{display:flex}
 .wrap{position:relative;width:min(340px,100%)}
@@ -69,19 +85,26 @@ button:disabled{opacity:.45}
 .x{position:absolute;top:-16px;right:-8px;z-index:9;padding:4px 12px;background:var(--card);color:var(--ink);box-shadow:3px 3px 0 var(--ink);font-size:13px}
 #intro{position:fixed;inset:0;z-index:50;background:var(--bg);background-image:radial-gradient(var(--wall) 1.5px,transparent 1.5px);background-size:18px 18px;display:flex;align-items:center;justify-content:center;padding:20px}
 #intro.hide{display:none}
-.introBox{width:min(340px,100%);background:var(--card);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--ink);padding:22px;text-align:center;transform:rotate(-1.5deg)}
+.introBox{position:relative;width:min(340px,100%);background:var(--card);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--ink);padding:22px;text-align:center;transform:rotate(-1.5deg)}
 .introBox .big{font-family:"Permanent Marker","Kanit",cursive;font-size:48px;line-height:1;text-shadow:4px 4px 0 var(--y);margin-bottom:10px}
 .introBox p{margin:0 0 14px;color:var(--mute)}
 .introBox button{width:100%}
 #join{position:relative;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
 #jbar{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--y);opacity:.6;pointer-events:none}
 #join span{position:relative}
+#how{position:fixed;inset:0;background:rgba(10,10,14,.78);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+#how.on{display:flex}
+#how .mis{width:min(340px,100%);text-align:left}
+#how ol{margin:8px 0 12px;padding-left:22px}
+#how li{margin-bottom:6px}
+#how button{width:100%}
 </style>
 </head>
 <body>
 
 <div id="intro">
   <div class="introBox">
+    <span class="stk a">⭐</span><span class="stk b">💌</span>
     <div class="big">STREET<br>MAIL</div>
     <p>มีซองรออยู่ในห้องลับ 💌</p>
     <input id="room" maxlength="40" placeholder="รหัสห้อง (สองคนใส่ให้ตรงกัน)">
@@ -91,11 +114,18 @@ button:disabled{opacity:.45}
 </div>
 
 <main>
-  <h1>STREET MAIL</h1>
-  <p class="sub">เขียนหากันวันละฉบับ · ทำภารกิจก่อน ถึงจะได้แกะซอง 💌</p>
+  <div class="top">
+    <div>
+      <h1>STREET MAIL</h1>
+      <p class="sub">เขียนหากันวันละฉบับ · ทำภารกิจก่อน ถึงจะได้แกะซอง 💌</p>
+    </div>
+    <button id="inst" type="button">📲 โหลดเป็นแอป</button>
+  </div>
+  <div class="tapeLine"><span>★ STREET MAIL ★ DAILY LETTERS ★ ทำภารกิจก่อนแกะซอง ★ เขียนหากันทุกวัน ★ STREET MAIL ★ DAILY LETTERS ★</span></div>
 
   <h2>✍️ เขียนวันนี้</h2>
   <div class="box">
+    <span class="stk a">✌️</span>
     <input id="nick" maxlength="20" placeholder="ชื่อเล่นของเรา (โชว์บนซอง)">
     <textarea id="txt" maxlength="2000" placeholder="วันนี้อยากบอกอะไรเขาดี…"></textarea>
     <div class="lab">🎯 ภารกิจที่เขาต้องทำก่อนเปิดซอง</div>
@@ -110,8 +140,9 @@ button:disabled{opacity:.45}
   <div class="empty" id="inboxEmpty" hidden>ยังไม่มีซองมาถึง รอแป๊บนะ 🌙</div>
 
   <h2>📮 ที่เราส่งไปแล้ว</h2>
-  <div class="box" id="sent"></div>
+  <div class="box" id="sent"><span class="stk b">🛹</span></div>
   <div class="note" id="mode"></div>
+  <div class="foot">★ เขียนด้วยใจ ส่งด้วยซอง ★</div>
 </main>
 
 <div id="modal">
@@ -124,6 +155,20 @@ button:disabled{opacity:.45}
       <div class="flap" id="flap">💗</div>
       <div class="hint">แตะตราประทับเพื่อเปิดซอง</div>
     </div>
+  </div>
+</div>
+
+<div id="how">
+  <div class="mis">
+    <h3>📲 โหลดเป็นแอป</h3>
+    <p>ทำตามนี้ใน Safari (iPhone/iPad)</p>
+    <ol>
+      <li>แตะปุ่ม <b>แชร์</b> (สี่เหลี่ยมมีลูกศรชี้ขึ้น) ที่แถบด้านบน</li>
+      <li>เลื่อนหา <b>เพิ่มไปยังหน้าจอโฮม</b> แล้วแตะ</li>
+      <li>กด <b>เพิ่ม</b> ไอคอนซองเหลืองจะมาอยู่บนหน้าจอ</li>
+    </ol>
+    <p style="font-size:12px;margin:0 0 10px">Android: กดเมนู ⋮ ของ Chrome แล้วเลือก "ติดตั้งแอป" หรือ "เพิ่มไปยังหน้าจอหลัก"</p>
+    <button id="howClose" type="button">เข้าใจแล้ว</button>
   </div>
 </div>
 
@@ -160,7 +205,7 @@ button:disabled{opacity:.45}
       g.appendChild(b);
     });
     $("inboxEmpty").hidden=inbox.length>0;
-    $("sent").innerHTML=mine.length?mine.map(function(l){var ml=misLabel(l.mission);return '<div class="mine"><span>'+fmt(l.date)+" · "+esc(l.text.slice(0,20))+(l.text.length>20?"…":"")+(ml?" · "+esc(ml):"")+'</span><span>'+(l.openedAt?"อ่านแล้ว 👀":"ยังไม่เปิด 🔒")+'</span></div>'}).join(""):'<div class="empty">ยังไม่ได้ส่งฉบับไหนเลย</div>';
+    $("sent").innerHTML='<span class="stk b">🛹</span>'+(mine.length?mine.map(function(l){var ml=misLabel(l.mission);return '<div class="mine"><span>'+fmt(l.date)+" · "+esc(l.text.slice(0,20))+(l.text.length>20?"…":"")+(ml?" · "+esc(ml):"")+'</span><span>'+(l.openedAt?"อ่านแล้ว 👀":"ยังไม่เปิด 🔒")+'</span></div>'}).join(""):'<div class="empty">ยังไม่ได้ส่งฉบับไหนเลย</div>');
     var did=mine.some(function(l){return l.date===today()});
     $("send").disabled=did;
     $("sendNote").textContent=did?"วันนี้ส่งแล้ว พรุ่งนี้มาเขียนใหม่นะ 🌷":"";
@@ -214,6 +259,31 @@ button:disabled{opacity:.45}
       .catch(function(){$("sendNote").textContent="ส่งไม่สำเร็จ ลองใหม่อีกครั้งนะ";$("send").disabled=false});
   };
   render();
+
+  /* ===== ติดตั้งเป็นแอป ===== */
+  var iconUrl="";
+  try{
+    var c=document.createElement("canvas");c.width=c.height=180;var x=c.getContext("2d");
+    x.fillStyle="#ffe500";x.fillRect(0,0,180,180);
+    x.strokeStyle="#16161a";x.lineWidth=8;x.strokeRect(4,4,172,172);
+    x.textAlign="center";x.textBaseline="middle";
+    x.font="84px serif";x.fillText("\u2709\uFE0F",90,78);
+    x.fillStyle="#16161a";x.font="bold 22px sans-serif";x.fillText("STREET MAIL",90,146);
+    iconUrl=c.toDataURL("image/png");
+    var ic=document.createElement("link");ic.rel="apple-touch-icon";ic.href=iconUrl;document.head.appendChild(ic);
+    var mf=document.createElement("link");mf.rel="manifest";
+    mf.href=URL.createObjectURL(new Blob([JSON.stringify({name:"Street Mail",short_name:"Street Mail",start_url:location.href,display:"standalone",background_color:"#ffe500",theme_color:"#ffe500",icons:[{src:iconUrl,sizes:"180x180",type:"image/png"}]})],{type:"application/manifest+json"}));
+    document.head.appendChild(mf);
+  }catch(e){}
+
+  var dp=null;
+  window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e});
+  var standalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||navigator.standalone;
+  if(standalone)$("inst").hidden=true;
+  $("inst").onclick=function(){
+    if(dp){dp.prompt();dp=null}else{$("how").classList.add("on")}
+  };
+  $("howClose").onclick=function(){$("how").classList.remove("on")};
 
   /* ===== Firebase ===== */
   var firebaseConfig = {
